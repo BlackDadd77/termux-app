@@ -12,7 +12,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /*
- * Version: v0.53.0
+ * Version: v0.54.0
  * SPDX-License-Identifier: MIT
  *
  * Changelog
@@ -282,6 +282,10 @@ import java.util.List;
  * - 0.53.0 (2025-01-12)
  *      - Renamed `TERMUX_API`, `TERMUX_STYLING`, `TERMUX_TASKER`, `TERMUX_WIDGET` classes with `_APP` suffix added.
  *      - Added `TERMUX_*_MAIN_ACTIVITY_NAME` and `TERMUX_*_LAUNCHER_ACTIVITY_NAME` constants to each app class.
+ *
+ * - 0.54.0 (2025-11-05)
+ *      - Added `TERMUX_GITLAB_ORGANIZATION_NAME`, `TERMUX_GITLAB_ORGANIZATION_URL`,
+ *          `TERMUX_GITLAB_REPO_NAME`, `TERMUX_GITLAB_REPO_URL`, `TERMUX_GITLAB_ISSUES_REPO_URL`.
  */
 
 /**
@@ -335,6 +339,11 @@ public final class TermuxConstants {
     /** Termux GitHub organization url */
     public static final String TERMUX_GITHUB_ORGANIZATION_URL = "https://github.com" + "/" + TERMUX_GITHUB_ORGANIZATION_NAME; // Default: "https://github.com/termux"
 
+    /** Termux GitLab organization name */
+    public static final String TERMUX_GITLAB_ORGANIZATION_NAME = "termux"; // Default: "termux"
+    /** Termux GitLab organization url */
+    public static final String TERMUX_GITLAB_ORGANIZATION_URL = "https://gitlab.com" + "/" + TERMUX_GITLAB_ORGANIZATION_NAME; // Default: "https://gitlab.com/termux"
+
     /** F-Droid packages base url */
     public static final String FDROID_PACKAGES_BASE_URL = "https://f-droid.org/en/packages"; // Default: "https://f-droid.org/en/packages"
 
@@ -356,6 +365,12 @@ public final class TermuxConstants {
     public static final String TERMUX_GITHUB_REPO_URL = TERMUX_GITHUB_ORGANIZATION_URL + "/" + TERMUX_GITHUB_REPO_NAME; // Default: "https://github.com/termux/termux-app"
     /** Termux GitHub issues repo url */
     public static final String TERMUX_GITHUB_ISSUES_REPO_URL = TERMUX_GITHUB_REPO_URL + "/issues"; // Default: "https://github.com/termux/termux-app/issues"
+    /** Termux GitLab repo name */
+    public static final String TERMUX_GITLAB_REPO_NAME = "termux-app"; // Default: "termux-app"
+    /** Termux GitLab repo url */
+    public static final String TERMUX_GITLAB_REPO_URL = TERMUX_GITLAB_ORGANIZATION_URL + "/" + TERMUX_GITLAB_REPO_NAME; // Default: "https://gitlab.com/termux/termux-app"
+    /** Termux GitLab issues repo url */
+    public static final String TERMUX_GITLAB_ISSUES_REPO_URL = TERMUX_GITLAB_REPO_URL + "/-/issues"; // Default: "https://gitlab.com/termux/termux-app/-/issues"
     /** Termux F-Droid package url */
     public static final String TERMUX_FDROID_PACKAGE_URL = FDROID_PACKAGES_BASE_URL + "/" + TERMUX_PACKAGE_NAME; // Default: "https://f-droid.org/en/packages/com.termux"
 
