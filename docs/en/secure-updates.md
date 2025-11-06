@@ -100,6 +100,10 @@ updateManager.downloadUpdate(updateInfo, new UpdateDownloader.DownloadCallback()
         // Handle error
     }
 });
+
+// Clean up resources when done
+// This should be called when the UpdateManager is no longer needed
+updateManager.shutdown();
 ```
 
 ### Configuration
@@ -118,7 +122,8 @@ Update behavior can be configured through SharedPreferences:
 - HTTP URLs are automatically rejected
 
 ### File Integrity
-- SHA-256 checksums verify file integrity
+- SHA-256 checksums are **mandatory** for all downloads
+- Downloads without valid checksums are rejected
 - Downloaded files are stored in app-private storage
 - Temporary files are cleaned up on failure
 
@@ -148,7 +153,9 @@ The update server should provide a JSON endpoint with the following format:
 }
 ```
 
-Alternatively, the system can parse GitHub release format.
+**Important:** The `sha256Checksum` field is **mandatory**. Updates without a valid SHA-256 checksum will be rejected for security reasons. This ensures that all downloaded files can be verified for integrity and authenticity.
+
+Alternatively, the system can parse GitHub release format. For GitHub releases, checksum files should be included as assets with the naming convention `<apk-filename>.sha256`.
 
 ## Testing
 

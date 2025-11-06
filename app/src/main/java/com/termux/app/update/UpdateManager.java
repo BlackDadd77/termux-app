@@ -223,4 +223,13 @@ public class UpdateManager {
             }
         }
     }
+
+    /**
+     * Shutdown and release resources.
+     * Should be called when the UpdateManager is no longer needed.
+     */
+    public void shutdown() {
+        updateChecker.shutdown();
+        updateDownloader.shutdown();
+    }
 }

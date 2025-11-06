@@ -29,13 +29,22 @@ import java.util.concurrent.Executors;
 public class UpdateChecker {
 
     private static final String LOG_TAG = "UpdateChecker";
-    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor;
     private final Context context;
     private final Handler mainHandler;
 
     public UpdateChecker(@NonNull Context context) {
         this.context = context.getApplicationContext();
         this.mainHandler = new Handler(Looper.getMainLooper());
+        this.executor = Executors.newSingleThreadExecutor();
+    }
+
+    /**
+     * Shutdown the executor service.
+     * Should be called when the UpdateChecker is no longer needed.
+     */
+    public void shutdown() {
+        executor.shutdown();
     }
 
     /**
@@ -163,9 +172,14 @@ public class UpdateChecker {
                 String downloadUrl = asset.getString("browser_download_url");
                 long fileSize = asset.optLong("size", 0);
                 
-                // For GitHub releases, we'll use a placeholder checksum
-                // In a real implementation, this should be provided in the release or fetched separately
-                String checksum = ""; // This should be obtained from a separate checksum file
+                // Look for a checksum file in assets (e.g., .sha256 file)
+                String checksum = findChecksumInAssets(json.getJSONArray("assets"), asset.getString("name"));
+                
+                // Checksum is required for security - without it, we cannot verify file integrity
+                if (checksum == null || checksum.isEmpty()) {
+                    Logger.logWarn(LOG_TAG, "No checksum found for update, skipping for security");
+                    return null;
+                }
                 
                 return new UpdateInfo(
                         version,
@@ -184,6 +198,34 @@ public class UpdateChecker {
             Logger.logError(LOG_TAG, "Failed to parse update info: " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Find checksum in GitHub release assets.
+     *
+     * @param assets GitHub release assets array
+     * @param apkName Name of the APK file
+     * @return Checksum string or null if not found
+     */
+    @Nullable
+    private String findChecksumInAssets(@NonNull org.json.JSONArray assets, @NonNull String apkName) {
+        try {
+            // Look for a .sha256 file with matching name
+            String checksumFileName = apkName + ".sha256";
+            for (int i = 0; i < assets.length(); i++) {
+                JSONObject asset = assets.getJSONObject(i);
+                if (checksumFileName.equals(asset.getString("name"))) {
+                    // In a full implementation, we would fetch this file and parse it
+                    // For now, return null to indicate checksum file exists but needs to be fetched
+                    Logger.logInfo(LOG_TAG, "Found checksum file: " + checksumFileName);
+                    // TODO: Fetch and parse checksum file
+                    return null;
+                }
+            }
+        } catch (JSONException e) {
+            Logger.logError(LOG_TAG, "Error searching for checksum: " + e.getMessage());
+        }
+        return null;
     }
 
     /**

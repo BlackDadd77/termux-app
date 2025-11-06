@@ -23,13 +23,22 @@ import java.util.concurrent.Executors;
 public class UpdateDownloader {
 
     private static final String LOG_TAG = "UpdateDownloader";
-    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor;
     private final Context context;
     private final Handler mainHandler;
 
     public UpdateDownloader(@NonNull Context context) {
         this.context = context.getApplicationContext();
         this.mainHandler = new Handler(Looper.getMainLooper());
+        this.executor = Executors.newSingleThreadExecutor();
+    }
+
+    /**
+     * Shutdown the executor service.
+     * Should be called when the UpdateDownloader is no longer needed.
+     */
+    public void shutdown() {
+        executor.shutdown();
     }
 
     /**
@@ -139,19 +148,21 @@ public class UpdateDownloader {
             fos.close();
             fos = null;
 
-            // Verify checksum if provided
+            // Verify checksum - this is MANDATORY for security
             String checksum = updateInfo.getSha256Checksum();
-            if (checksum != null && !checksum.isEmpty()) {
-                Logger.logInfo(LOG_TAG, "Verifying checksum...");
-                if (!UpdateSecurityUtils.verifySHA256(tempFile, checksum)) {
-                    Logger.logError(LOG_TAG, "Checksum verification failed");
-                    tempFile.delete();
-                    return null;
-                }
-                Logger.logInfo(LOG_TAG, "Checksum verified successfully");
-            } else {
-                Logger.logWarn(LOG_TAG, "No checksum provided, skipping verification");
+            if (checksum == null || checksum.isEmpty()) {
+                Logger.logError(LOG_TAG, "No checksum provided - cannot verify download integrity");
+                tempFile.delete();
+                return null;
             }
+
+            Logger.logInfo(LOG_TAG, "Verifying checksum...");
+            if (!UpdateSecurityUtils.verifySHA256(tempFile, checksum)) {
+                Logger.logError(LOG_TAG, "Checksum verification failed");
+                tempFile.delete();
+                return null;
+            }
+            Logger.logInfo(LOG_TAG, "Checksum verified successfully");
 
             // Rename temp file to final file
             if (!tempFile.renameTo(finalFile)) {
