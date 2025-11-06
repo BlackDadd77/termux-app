@@ -162,6 +162,7 @@ The main ones are the following.
 - [Package Management](https://wiki.termux.com/wiki/Package_Management)
 - [Remote Access](https://wiki.termux.com/wiki/Remote_Access)
 - [Backing up Termux](https://wiki.termux.com/wiki/Backing_up_Termux)
+- [Secure Updates](docs/en/secure-updates.md)
 - [Terminal Settings](https://wiki.termux.com/wiki/Terminal_Settings)
 - [Touch Keyboard](https://wiki.termux.com/wiki/Touch_Keyboard)
 - [Android Storage and Sharing Data with Other Apps](https://wiki.termux.com/wiki/Internal_and_external_storage)
